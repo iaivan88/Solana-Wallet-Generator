@@ -1,0 +1,3 @@
+base58==2.1.1
+solana==0.21.0
+mnemonic~=0.21

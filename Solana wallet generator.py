@@ -1,4 +1,4 @@
-from solana.keypair import Keypair
+from solders.keypair import Keypair
 from mnemonic import Mnemonic
 from bip_utils import Bip39SeedGenerator, Bip44, Bip44Coins, Bip44Changes
 from base58 import b58encode
@@ -9,16 +9,17 @@ def generate_solana_wallet():
     mnemo = Mnemonic("english")
     seed_phrase = mnemo.generate(strength=128)
 
-    # Derive Solana keypair using BIP44 (m/44'/501'/0'/0')
+    # Derive Solana keypair using BIP44 (m/44'/501'/0'/0/0)
     seed_bytes = Bip39SeedGenerator(seed_phrase).Generate()
-    bip44_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.SOLANA).Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
+    bip44_ctx = (Bip44.FromSeed(seed_bytes, Bip44Coins.SOLANA)
+                 .Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0))
 
     private_key_bytes = bip44_ctx.PrivateKey().Raw().ToBytes()
-    keypair = Keypair.from_secret_key(private_key_bytes)
+    keypair = Keypair.from_seed(private_key_bytes)
 
-    # Encode private key as base58
-    private_key_b58 = b58encode(keypair.secret_key).decode("utf-8")
-    address = str(keypair.public_key)
+    # Encode private key as base58 (64 bytes secret key)
+    private_key_b58 = b58encode(bytes(keypair)).decode("utf-8")
+    address = str(keypair.pubkey())
 
     return seed_phrase, private_key_b58, address
 

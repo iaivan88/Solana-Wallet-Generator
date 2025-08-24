@@ -15,7 +15,7 @@ def generate_evm_wallet():
     private_key_hex = bip44_ctx.PrivateKey().Raw().ToHex()  # 64-char hex
     acct = Account.from_key(bytes.fromhex(private_key_hex))
 
-    return seed_phrase, "0x" + private_key_hex, acct.address
+    return seed_phrase, private_key_hex, acct.address
 
 
 def menu():
